@@ -1,5 +1,6 @@
 # code by Abigail Banas
 
+## Loading Libraries
 library(shiny)
 library(shinyjs)
 library(quantmod)
@@ -12,6 +13,69 @@ library(ggeasy)
 library(tidyquant)
 library(ggthemes)
 library(shinythemes)
+
+## Creating Data
+file_Atlanta <- "flights_Atlanta.csv"
+Atlanta_gTrends <- read.csv(file_Atlanta, skip = 2)
+names(Atlanta_gTrends) <- c("Month", "Interest")
+Atlanta_gTrends$Month <- yearmonth(Atlanta_gTrends$Month)
+Atlanta_gTrends$City <- replicate(147, "Atlanta")
+
+
+file_Chigaco <- "flights_Chicago.csv"
+Chicago_gTrends <- read.csv(file_Chigaco, skip = 2)
+names(Chicago_gTrends) <- c("Month", "Interest")
+Chicago_gTrends$Month <- yearmonth(Chicago_gTrends$Month)
+Chicago_gTrends$City <- replicate(147, "Chicago")
+
+
+file_Dallas <- "flights_Dallas.csv"
+Dallas_gTrends <- read.csv(file_Dallas, skip = 2)
+names(Dallas_gTrends) <- c("Month", "Interest")
+Dallas_gTrends$Month <- yearmonth(Dallas_gTrends$Month)
+Dallas_gTrends$City <- replicate(147, "Dallas")
+
+file_Denver <- "flights_Denver.csv"
+Denver_gTrends <- read.csv(file_Denver, skip = 2)
+names(Denver_gTrends) <- c("Month", "Interest")
+Denver_gTrends$Month <- yearmonth(Denver_gTrends$Month)
+Denver_gTrends$City <- replicate(147, "Denver")
+
+
+file_LosAngeles <- "flights_LosAngeles.csv"
+LosAngeles_gTrends <- read.csv(file_LosAngeles, skip = 2)
+names(LosAngeles_gTrends) <- c("Month", "Interest")
+LosAngeles_gTrends$Month <- yearmonth(LosAngeles_gTrends$Month)
+LosAngeles_gTrends$City <- replicate(147, "Los Angeles")
+
+file_NewOrleans <- "flights_NewOrleans.csv"
+NewOrleans_gTrends <- read.csv(file_NewOrleans, skip = 2)
+names(NewOrleans_gTrends) <- c("Month", "Interest")
+NewOrleans_gTrends$Month <- yearmonth(NewOrleans_gTrends$Month)
+NewOrleans_gTrends$City <- replicate(147, "New Orleans")
+
+
+file_NewYork <- "flights_NewYork.csv"
+NewYork_gTrends <- read.csv(file_NewYork, skip = 2)
+names(NewYork_gTrends) <- c("Month", "Interest")
+NewYork_gTrends$Month <- yearmonth(NewYork_gTrends$Month)
+NewYork_gTrends$City <- replicate(147, "New York")
+
+
+file_Seattle <- "flights_Seattle.csv"
+Seattle_gTrends <- read.csv(file_Seattle, skip = 2)
+names(Seattle_gTrends) <- c("Month", "Interest")
+Seattle_gTrends$Month <- yearmonth(Seattle_gTrends$Month)
+Seattle_gTrends$City <- replicate(147, "Seattle")
+
+AllCity_gTrends <- bind_rows(Atlanta_gTrends,Chicago_gTrends,Dallas_gTrends,Denver_gTrends,
+                            LosAngeles_gTrends,NewOrleans_gTrends,NewYork_gTrends,
+                             Seattle_gTrends)
+AllCity_gTrends <- tsibble(AllCity_gTrends, key = "City", index = "Month")
+AllCity_gTrends <- AllCity_gTrends %>% mutate(diff = difference(Interest))
+
+
+
 
 
 ui <- fluidPage(theme = shinytheme("cosmo"),
@@ -136,70 +200,71 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
 
 server <- function(input, output) {
 
-  flightdata <- reactive({
- 
-    file_Atlanta <- "flights_Atlanta.csv"
-    Atlanta_gTrends <- read.csv(file_Atlanta, skip = 2)
-    names(Atlanta_gTrends) <- c("Month", "Interest")
-    Atlanta_gTrends$Month <- yearmonth(Atlanta_gTrends$Month)
-    Atlanta_gTrends$City <- replicate(147, "Atlanta")
-    
+  #  flightdata <- reactive({
+  # 
+  #   file_Atlanta <- "flights_Atlanta.csv"
+  #   Atlanta_gTrends <- read.csv(file_Atlanta, skip = 2)
+  #   names(Atlanta_gTrends) <- c("Month", "Interest")
+  #   Atlanta_gTrends$Month <- yearmonth(Atlanta_gTrends$Month)
+  #   Atlanta_gTrends$City <- replicate(147, "Atlanta")
+  #   
+  # 
+  #   file_Chigaco <- "flights_Chicago.csv"
+  #   Chicago_gTrends <- read.csv(file_Chigaco, skip = 2)
+  #   names(Chicago_gTrends) <- c("Month", "Interest")
+  #   Chicago_gTrends$Month <- yearmonth(Chicago_gTrends$Month)
+  #   Chicago_gTrends$City <- replicate(147, "Chicago")
+  #   
+  #   
+  #   file_Dallas <- "flights_Dallas.csv"
+  #   Dallas_gTrends <- read.csv(file_Dallas, skip = 2)
+  #   names(Dallas_gTrends) <- c("Month", "Interest")
+  #   Dallas_gTrends$Month <- yearmonth(Dallas_gTrends$Month)
+  #   Dallas_gTrends$City <- replicate(147, "Dallas")
+  #   
+  #   file_Denver <- "flights_Denver.csv"
+  #   Denver_gTrends <- read.csv(file_Denver, skip = 2)
+  #   names(Denver_gTrends) <- c("Month", "Interest")
+  #   Denver_gTrends$Month <- yearmonth(Denver_gTrends$Month)
+  #   Denver_gTrends$City <- replicate(147, "Denver")
+  #   
+  #   
+  #   file_LosAngeles <- "flights_LosAngeles.csv"
+  #   LosAngeles_gTrends <- read.csv(file_LosAngeles, skip = 2)
+  #   names(LosAngeles_gTrends) <- c("Month", "Interest")
+  #   LosAngeles_gTrends$Month <- yearmonth(LosAngeles_gTrends$Month)
+  #   LosAngeles_gTrends$City <- replicate(147, "Los Angeles")
+  #   
+  #   file_NewOrleans <- "flights_NewOrleans.csv"
+  #   NewOrleans_gTrends <- read.csv(file_NewOrleans, skip = 2)
+  #   names(NewOrleans_gTrends) <- c("Month", "Interest")
+  #   NewOrleans_gTrends$Month <- yearmonth(NewOrleans_gTrends$Month)
+  #   NewOrleans_gTrends$City <- replicate(147, "New Orleans")
+  #   
+  #   
+  #   file_NewYork <- "flights_NewYork.csv"
+  #   NewYork_gTrends <- read.csv(file_NewYork, skip = 2)
+  #   names(NewYork_gTrends) <- c("Month", "Interest")
+  #   NewYork_gTrends$Month <- yearmonth(NewYork_gTrends$Month)
+  #   NewYork_gTrends$City <- replicate(147, "New York")
+  #   
+  #   
+  #   file_Seattle <- "flights_Seattle.csv"
+  #   Seattle_gTrends <- read.csv(file_Seattle, skip = 2)
+  #   names(Seattle_gTrends) <- c("Month", "Interest")
+  #   Seattle_gTrends$Month <- yearmonth(Seattle_gTrends$Month)
+  #   Seattle_gTrends$City <- replicate(147, "Seattle")
+  #   
+  #   AllCity_gTrends <- bind_rows(Atlanta_gTrends,Chicago_gTrends,Dallas_gTrends,Denver_gTrends,
+  #                                LosAngeles_gTrends,NewOrleans_gTrends,NewYork_gTrends,
+  #                               Seattle_gTrends)
+  #   AllCity_gTrends <- tsibble(AllCity_gTrends, key = "City", index = "Month")
+  #   AllCity_gTrends <- AllCity_gTrends %>% mutate(diff = difference(Interest))
+  # 
+  #   return(AllCity_gTrends[AllCity_gTrends$City%in%input$checkGroup,])
+  # 
+  # })
 
-    file_Chigaco <- "flights_Chicago.csv"
-    Chicago_gTrends <- read.csv(file_Chigaco, skip = 2)
-    names(Chicago_gTrends) <- c("Month", "Interest")
-    Chicago_gTrends$Month <- yearmonth(Chicago_gTrends$Month)
-    Chicago_gTrends$City <- replicate(147, "Chicago")
-    
-    
-    file_Dallas <- "flights_Dallas.csv"
-    Dallas_gTrends <- read.csv(file_Dallas, skip = 2)
-    names(Dallas_gTrends) <- c("Month", "Interest")
-    Dallas_gTrends$Month <- yearmonth(Dallas_gTrends$Month)
-    Dallas_gTrends$City <- replicate(147, "Dallas")
-    
-    file_Denver <- "flights_Denver.csv"
-    Denver_gTrends <- read.csv(file_Denver, skip = 2)
-    names(Denver_gTrends) <- c("Month", "Interest")
-    Denver_gTrends$Month <- yearmonth(Denver_gTrends$Month)
-    Denver_gTrends$City <- replicate(147, "Denver")
-    
-    
-    file_LosAngeles <- "flights_LosAngeles.csv"
-    LosAngeles_gTrends <- read.csv(file_LosAngeles, skip = 2)
-    names(LosAngeles_gTrends) <- c("Month", "Interest")
-    LosAngeles_gTrends$Month <- yearmonth(LosAngeles_gTrends$Month)
-    LosAngeles_gTrends$City <- replicate(147, "Los Angeles")
-    
-    file_NewOrleans <- "flights_NewOrleans.csv"
-    NewOrleans_gTrends <- read.csv(file_NewOrleans, skip = 2)
-    names(NewOrleans_gTrends) <- c("Month", "Interest")
-    NewOrleans_gTrends$Month <- yearmonth(NewOrleans_gTrends$Month)
-    NewOrleans_gTrends$City <- replicate(147, "New Orleans")
-    
-    
-    file_NewYork <- "flights_NewYork.csv"
-    NewYork_gTrends <- read.csv(file_NewYork, skip = 2)
-    names(NewYork_gTrends) <- c("Month", "Interest")
-    NewYork_gTrends$Month <- yearmonth(NewYork_gTrends$Month)
-    NewYork_gTrends$City <- replicate(147, "New York")
-    
-    
-    file_Seattle <- "flights_Seattle.csv"
-    Seattle_gTrends <- read.csv(file_Seattle, skip = 2)
-    names(Seattle_gTrends) <- c("Month", "Interest")
-    Seattle_gTrends$Month <- yearmonth(Seattle_gTrends$Month)
-    Seattle_gTrends$City <- replicate(147, "Seattle")
-    
-    AllCity_gTrends <- bind_rows(Atlanta_gTrends,Chicago_gTrends,Dallas_gTrends,Denver_gTrends,
-                                 LasVegas_gTrends,LosAngeles_gTrends,NewOrleans_gTrends,NewYork_gTrends,
-                                Seattle_gTrends)
-    AllCity_gTrends <- tsibble(AllCity_gTrends, key = "City", index = "Month")
-    AllCity_gTrends %>% mutate(diff = difference(Interest))
-    
-    return(AllCity_gTrends[AllCity_gTrends$City%in%input$checkGroup,])
-    
-  })
   
   
   output$checkBox <- renderPrint({ input$checkGroup })
